@@ -6,6 +6,8 @@ import os
 from pdfwebsite.models import File
 from datetime import datetime, timedelta
 
+#File will check DB and delete files older than 1 hour.
+
 class Command(BaseCommand):
     help = 'Cleans old files'
 
@@ -14,5 +16,8 @@ class Command(BaseCommand):
         results = File.objects.filter(date_posted__lt=time_threshold)
         for file in results:
         	path=file.path
-        	os.remove(path)
+        	try:
+        		os.remove(path)
+        	except OSError:
+        		pass
         	file.delete()
