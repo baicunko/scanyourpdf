@@ -12,3 +12,6 @@ Project requires ImageMagic and GhostScript.
 # Pending
 - Contact form for people to send any PDF that may have failed the conversion process to check
 - Make a Contributing.md file for people to help
+
+# Pull request
+- I think everything is working for people to start contributing. Any questions or comments please feel free to send me an email at hello@scanyourpdf.com
