@@ -98,8 +98,8 @@ a.article-title:hover {
 
 .file-upload {
   background-color: #ffffff;
-  width: 600px;
-  margin: 0 auto;
+  max-width: 600px;
+  margin: auto;
   padding: 20px;
 }
 
