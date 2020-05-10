@@ -42,7 +42,10 @@
 				</div>
 			</div>
 			<div class="file-upload-content">
-				<img class="file-upload-image" src="#" alt="your image" />
+			</br>
+				<div>
+				<p class="file-upload-name"></p>
+				</div>
 				<div class="row">
 					<div class="image-title-wrap col-sm-6 align-items-start">
 						<button type="button" onclick="removeUpload()" class="remove-image">Remove</button>
@@ -69,11 +72,6 @@
 <script>
 
 
-	$('#form').submit(function( event ) {
-		$('#file-upload').LoadingOverlay("show");
-
-	});
-
 	function readURL(input) {
 		if (input.files && input.files[0]) {
 
@@ -82,10 +80,11 @@
 			reader.onload = function(e) {
 				$('.image-upload-wrap').hide();
 
-				$('.file-upload-image').attr('src', e.target.result);
+				$('.file-upload-name').text(input.files[0].name);
 				$('.file-upload-content').show();
 
 				$('.image-title').html(input.files[0].name);
+				console.log(input.files[0].name);
 			};
 
 			reader.readAsDataURL(input.files[0]);
