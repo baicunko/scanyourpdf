@@ -1,13 +1,13 @@
+import datetime
+import os
+import secrets
+import subprocess
+import urllib.parse
+
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
-from urllib.parse import urlparse
-import urllib.parse
-import subprocess
-import os
-import datetime
-import random
-import string
 from PyPDF2 import PdfFileWriter, PdfFileReader, utils
+
 from pdfwebsite.models import File
 
 
@@ -42,7 +42,12 @@ def processPDF(uploaded_file):
 	dirspot = os.getcwd()
 	dirspot=dirspot+fs.url(name)
 	now = datetime.datetime.now()
-	scan_name='Scan_'+str(now.year)+str(now.month)+str(now.day)+'_'+randomString()
+
+	# 8 bytes of randomness on the end of the path should be sufficient -
+	# it is more than can be brute-forced in any reasonable amount of time
+	# over the network, especially with the cleanup task removing files every
+	# hour.
+	scan_name='Scan_' + str(now.year) + str(now.month) + str(now.day) + '_' + secrets.token_urlsafe(8)
 	dirspot=urllib.parse.unquote(dirspot)
 	validate_file=isPdfValid(dirspot)
 	if validate_file:
@@ -78,8 +83,3 @@ def isPdfValid(path):
 		return False
 	else:
 		return True
-
-
-def randomString(stringLength=4):
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(stringLength))
