@@ -6,8 +6,36 @@ This is my first open-source project so please, feel free to comment on anything
 
 # Dependencies
 
-Project requires ImageMagic and GhostScript.
+Project requires ImageMagick and GhostScript. This will do the trick on Ubuntu:
 
+```
+sudo apt-get install ghostscript
+sudo apt-get install imagemagick
+```
+
+This should work on macOS with [Homebrew](https://brew.sh/):
+
+```
+brew install ghostscript
+brew install imagemagick
+```
+
+Then the usual virtualenv dance:
+
+```
+python3 -m venv .venv
+pip install -r requirements.txt
+```
+
+On Ubuntu, PDF support in ImageMagick is disabled by default for security reasons. To "fix" this, change the line in `/etc/ImageMagick-6/policy.xml` from this:
+
+```<policy domain="coder" rights="none" pattern="PDF" />```
+
+To this:
+
+```<policy domain="coder" rights="read|write" pattern="PDF" />```
+
+Be warned that this may be insecure; use at your own risk.
 
 # Pending
 - Contact form for people to send any PDF that may have failed the conversion process to check
