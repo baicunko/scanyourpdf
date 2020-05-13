@@ -70,7 +70,7 @@ def isPdfValid(path):
 		reader=PdfFileReader(open(path,'rb'))
 		num_pages = reader.getNumPages()
 		if num_pages>100:
-			return True
+			return False
 
 		return True
 	except utils.PdfReadError:
