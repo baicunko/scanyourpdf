@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+from django.core.exceptions import ImproperlyConfigured
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -122,3 +125,21 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+# Paths to ImageMagick and Ghostscript. It's kept in /usr/local/bin on
+# Mac + Homebrew, /usr/bin on Ubuntu systems (and probably anything else).
+GHOSTSCRIPT_PATH = None
+CONVERT_PATH = None
+
+for candidate in ['/usr/local/bin/gs', '/usr/bin/gs']:
+    if os.path.exists(candidate):
+        GHOSTSCRIPT_PATH = candidate
+        break
+
+for candidate in ['/usr/local/bin/convert', '/usr/bin/convert']:
+    if os.path.exists(candidate):
+        CONVERT_PATH = candidate
+        break
+
+if not CONVERT_PATH or not GHOSTSCRIPT_PATH:
+    raise ImproperlyConfigured('Check CONVERT_PATH and GHOSTSCRIPT_PATH in your settings.')
