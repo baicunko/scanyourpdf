@@ -211,3 +211,13 @@ a.article-title:hover {
   border: 0;
   transition: all .2s ease;
 }
+.mail-wrap{
+  width: 100%;
+  text-align: center;
+  color: #15824B;
+}
+.mail-form{
+  height: 50px;
+  width: 90%;
+  font-size: 30px;
+}
