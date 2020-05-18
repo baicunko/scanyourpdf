@@ -1,0 +1,93 @@
+{% extends "pdfwebsite/base.html" %}
+{% block content %}
+	<h1>Failed Conversion? Upload it here</h1>
+  <div class="loading">
+      <div class='uil-ring-css' style='transform:scale(0.79);'>
+      </div>
+    </div>
+
+
+    {% if url %}
+    <div class="file-upload centrar">
+    	<p>Your document is uploaded</p>
+    	<a class="btn btn-primary justify-content-center col-sm" href="{{ url }}">Download</a>
+    </div>
+
+    {% elif error %}
+    <div class="file-upload centrar">
+    	<div class="alert alert-danger" role="alert">
+    		{{ error }}
+    	</div>
+    </div>
+
+	{% else %}
+  <div class="file-upload" id="file-upload">
+		<form method="post" enctype="multipart/form-data" id="form">
+			{% csrf_token %}
+			<button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add File</button>
+
+			<div class="image-upload-wrap">
+				<input class="file-upload-input" type='file' onchange="readURL(this);" accept="application/pdf" name="document" />
+				<div class="drag-text">
+					<h3> Drop File here or select Add File</h3>
+				</div>
+			</div>
+			<div class="file-upload-content">
+			</br>
+				<div>
+				<p class="file-upload-name"></p>
+				</div>
+				<div class="row">
+					<div class="image-title-wrap col-sm-6 align-items-start">
+						<button type="button" onclick="removeUpload()" class="remove-image">Remove</button>
+					</div>
+					<div class="image-title-wrap col-sm-6 align-items-end">
+						<button type="submit" id="btn_upload" class="file-upload-btn">Submit</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+  {% endif %}
+  <script>
+
+
+  	function readURL(input) {
+  		if (input.files && input.files[0]) {
+
+  			var reader = new FileReader();
+
+  			reader.onload = function(e) {
+  				$('.image-upload-wrap').hide();
+
+  				$('.file-upload-name').text(input.files[0].name);
+  				$('.file-upload-content').show();
+
+  				$('.image-title').html(input.files[0].name);
+  				console.log(input.files[0].name);
+  			};
+
+  			reader.readAsDataURL(input.files[0]);
+
+  		} else {
+  			removeUpload();
+  		}
+  	}
+
+
+  	function removeUpload() {
+  		$('.file-upload-input').replaceWith($('.file-upload-input').clone());
+  		$('.file-upload-content').hide();
+  		$('.image-upload-wrap').show();
+  	}
+  	$('.image-upload-wrap').bind('dragover', function () {
+  		$('.image-upload-wrap').addClass('image-dropping');
+  	});
+  	$('.image-upload-wrap').bind('dragleave', function () {
+  		$('.image-upload-wrap').removeClass('image-dropping');
+  	});
+
+
+  </script>
+
+{% endblock content %}
