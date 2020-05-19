@@ -4,7 +4,7 @@ This is my first open-source project so please, feel free to comment on anything
 
 We were featured in HN for more than 12 hours on the front page! Thanks to everyone that commented and provided feedbck on the project. We are currently working in implementing all of them and feel free to drop of any comments!
 
-[HN Post] (https://news.ycombinator.com/item?id=23157408)
+[HN Post](https://news.ycombinator.com/item?id=23157408)
 
 
 
