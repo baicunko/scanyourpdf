@@ -49,6 +49,7 @@ The document scanned_pdf.sh is a simple Gist with the two commands required to m
 chmod +x ./scanned_pdf.sh
 ```
 This makes the script executable
+
 Usage:
 ```
 ./scanned_pdf.sh <filename_to_convert.pdf>
