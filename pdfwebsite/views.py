@@ -31,6 +31,9 @@ def upload(request):
 
 	return render(request, 'pdfwebsite/upload.html', response)
 
+def failed(request):
+	return render(request,'pdfwebsite/failed.html')
+
 
 def processPDF(uploaded_file):
 	context = {}
