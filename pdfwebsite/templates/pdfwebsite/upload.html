@@ -19,10 +19,6 @@
     	<p>Your document is ready</p>
 		<a class="btn btn-primary justify-content-center col-sm" href="{{ url }}">Download</a>
 		<br/><br/>
-		<p>Link to file</p>
-		<input class="url-field" id="url-field" type="text" name="url" value="https://www.scanyourpdf.com{{ url }}">
-		<br/><br/>
-		<a class="btn btn-primary justify-content-center col-sm" onclick="copyUrl()">Copy Link</a>
     </div>
 
 
@@ -130,14 +126,6 @@ PayPal
 		$('.image-upload-wrap').removeClass('image-dropping');
 	});
 
-	
-	function copyUrl() {
-		var copyText = document.getElementById('url-field');
-		console.log(copyText);
-  		copyText.select();
-  		copyText.setSelectionRange(0, 99999);
-  		document.execCommand("copy");
-	} 
 
 </script>
 {% endblock content %}
