@@ -38,8 +38,8 @@ def failed(request):
 def processPDF(uploaded_file):
 	context = {}
 	fs = FileSystemStorage()
-	if uploaded_file.size>104857600:
-		context['error']='PDF is larger than 100MB, please recheck uploaded file'
+	if uploaded_file.size>52428000:
+		context['error']='PDF is larger than 50MB, please recheck uploaded file'
 		return context
 
 	name = fs.save(uploaded_file.name,uploaded_file)
@@ -78,7 +78,7 @@ def isPdfValid(path):
 	try:
 		reader=PdfFileReader(open(path,'rb'))
 		num_pages = reader.getNumPages()
-		if num_pages>100:
+		if num_pages>10:
 			return False
 
 		return True

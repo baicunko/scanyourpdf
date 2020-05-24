@@ -1,16 +1,17 @@
-{% extends "pdfwebsite/base.html" %}
-{% block content %}
-<h1>Upload any PDF to make it look like it was scanned!</h1>
+	{% extends "pdfwebsite/base.html" %}
+	{% block content %}
+	<h1>Upload any PDF to make it look like it was scanned!</h1>
 
-<div class="col-md-12">
-	<p>Tired of being asked to print and scan your signed PDF? Just use a digital signature, upload your document and we will make it look like it was scanned</p>
-	<p>Document will be available for 1 hour. Maximum of 100 pages PDF.</p>
-	
+	<div class="col-md-12">
+		<p>Tired of being asked to print and scan your signed PDF? Just use a digital signature, upload your document and we will make it look like it was scanned</p>
+		<p>Document will be available for 1 hour. Maximum of 10 pages PDF.</p>
+		
 
-	<div class="loading">
-      <div class='uil-ring-css' style='transform:scale(0.79);'>
-      </div>
-    </div>
+		<div class="loading">
+			<div class='uil-ring-css' style='transform:scale(0.79);'>
+			</div>
+		</div>
+
 
 
     {% if url %}
@@ -24,32 +25,33 @@
 		<a class="btn btn-primary justify-content-center col-sm" onclick="copyUrl()">Copy Link</a>
     </div>
 
-    {% elif error %}
-    <div class="file-upload centrar">
-    	<div class="alert alert-danger" role="alert">
-    		{{ error }}
-    	</div>
-    </div>
 
-
-
-	{% else %}
-
-	<div class="file-upload" id="file-upload">
-		<form method="post" enctype="multipart/form-data" id="form">
-			{% csrf_token %}
-			<button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add File</button>
-
-			<div class="image-upload-wrap">
-				<input class="file-upload-input" type='file' onchange="readURL(this);" accept="application/pdf" name="document" />
-				<div class="drag-text">
-					<h3> Drop File here or select Add File</h3>
-				</div>
+		{% elif error %}
+		<div class="file-upload centrar">
+			<div class="alert alert-danger" role="alert">
+				{{ error }}
 			</div>
-			<div class="file-upload-content">
-			</br>
+		</div>
+
+
+
+		{% else %}
+
+		<div class="file-upload" id="file-upload">
+			<form method="post" enctype="multipart/form-data" id="form">
+				{% csrf_token %}
+				<button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add File</button>
+
+				<div class="image-upload-wrap">
+					<input class="file-upload-input" type='file' onchange="readURL(this);" accept="application/pdf" name="document" />
+					<div class="drag-text">
+						<h3> Drop File here or select Add File</h3>
+					</div>
+				</div>
+				<div class="file-upload-content">
+				</br>
 				<div>
-				<p class="file-upload-name"></p>
+					<p class="file-upload-name"></p>
 				</div>
 				<div class="row">
 					<div class="image-title-wrap col-sm-6 align-items-start">
@@ -68,10 +70,26 @@
 
 	<div>
 	</br></br></br>
-		<p>Questions? Contact us at hello@scanyourpdf.com</p>
-	</div>
+	<p>Questions? Contact us at hello@scanyourpdf.com</p>
+</div>
+</br></br>
+<p>Like the service? Help us keep the servers running!</p>
+<p>Bitcoin Address: 15PEGoC5PbGz9obPJvWWu4YEikiF4UPJza <br>
+Ethereum Address: 0x26873FcbFcC6570aE7Dbd4852c872C70A46CB113
+</p>
+
+
+<div class="container" align="center">
+PayPal 
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+			<input type="hidden" name="cmd" value="_s-xclick" />
+			<input type="hidden" name="hosted_button_id" value="P8YGRZB7GQZCY" />
+			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+		</form>		
 </div>
 
+
+</div>
 
 
 <script>
