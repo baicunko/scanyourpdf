@@ -222,3 +222,7 @@ a.article-title:hover {
   font-size: 30px;
   text-align: center;
 }
+.url-field{
+  width: 90%;
+  margin-left: 5%;
+}
