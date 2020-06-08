@@ -65,11 +65,13 @@ def processPDF(uploaded_file):
 		context['url'] = '/media/'+scan_name+'.pdf'
 		file_save_to_db=File(path=output_path_final)
 		file_save_to_db.save()
+		os.remove(output_path)
+		os.remove(dirspot)
 	else:
-		context['error']='PDF is not valid, please recheck uploaded file'
+		context['error']='PDF is not valid or longer than allowed, please recheck uploaded file'
+		os.remove(dirspot)
 
-	os.remove(output_path)
-	os.remove(dirspot)
+	
 	return context
 
 
