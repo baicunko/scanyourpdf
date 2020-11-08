@@ -57,7 +57,7 @@ def processPDF(uploaded_file):
 	if validate_file:
 		output_path=os.getcwd()+'/media/'+scan_name+'_.pdf'
 		output_path_final=os.getcwd()+'/media/'+scan_name+'.pdf'
-		cmd = [settings.CONVERT_PATH,'-density','150',dirspot,'-colorspace','gray','-linear-stretch','3.5%x10%','-blur','0x0.5','-attenuate','0.25','+noise','Gaussian','-rotate','0.5',output_path]
+		cmd = [settings.CONVERT_PATH,'-density','75',dirspot,'-colorspace','gray','-linear-stretch','3.5%x10%','-blur','0x0.5','-attenuate','0.25','+noise','Laplacian','-rotate','0.5',output_path]
 		print (cmd)
 		subprocess.call(cmd, shell=False)
 		cmd_gs = [settings.GHOSTSCRIPT_PATH,'-dSAFER','-dBATCH','-dNOPAUSE','-dNOCACHE','-sDEVICE=pdfwrite','-sColorConversionStrategy=LeaveColorUnchanged','-dAutoFilterColorImages=true','-dAutoFilterGrayImages=true','-dDownsampleMonoImages=true','-dDownsampleGrayImages=true','-dDownsampleColorImages=true','-sOutputFile='+output_path_final, output_path]
