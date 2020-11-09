@@ -10,6 +10,7 @@ from django.core.files.storage import FileSystemStorage
 from PyPDF2 import PdfFileWriter, PdfFileReader, utils
 
 from pdfwebsite.models import File
+from pdfwebsite.models import Processed
 
 
 def home(request):
@@ -83,6 +84,8 @@ def isPdfValid(path):
 		if num_pages>10:
 			return False
 
+		saved_file=Processed(pages=num_pages)
+		saved_file.save()
 		return True
 	except utils.PdfReadError:
 		print("invalid PDF file")
