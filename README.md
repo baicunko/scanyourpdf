@@ -25,10 +25,11 @@ brew install ghostscript
 brew install imagemagick
 ```
 
-Then the usual virtualenv dance:
+Then the usual virtualenv dance (this within your software directory):
 
 ```
 python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 

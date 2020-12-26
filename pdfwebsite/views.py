@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from PyPDF2 import PdfFileWriter, PdfFileReader, utils
 
-from pdfwebsite.models import File
+from pdfwebsite.models import File,ProcessedFile
 
 
 def home(request):
@@ -64,6 +64,7 @@ def processPDF(uploaded_file):
 		subprocess.call(cmd_gs, shell=False)
 		context['url'] = '/media/'+scan_name+'.pdf'
 		file_save_to_db=File(path=output_path_final)
+		
 		file_save_to_db.save()
 		os.remove(output_path)
 		os.remove(dirspot)
@@ -80,6 +81,8 @@ def isPdfValid(path):
 	try:
 		reader=PdfFileReader(open(path,'rb'))
 		num_pages = reader.getNumPages()
+		processed_file=ProcessedFile(pages=num_pages)
+		processed_file.save()
 		if num_pages>10:
 			return False
 
