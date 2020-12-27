@@ -1,6 +1,6 @@
 	{% extends "pdfwebsite/base.html" %}
 	{% block content %}
-	<h1>Upload any PDF to make it look like it was scanned!</h1>
+	<h1>Upload any PDF to make it look like it was scanned</h1>
 
 	<div class="col-md-12">
 		<p>Tired of being asked to print and scan your signed PDF? Just use a digital signature, upload your document and we will make it look like it was scanned</p>
@@ -69,6 +69,9 @@
 	<p>Questions? Contact us at hello@scanyourpdf.com</p>
 </div>
 </br></br>
+{% if processed_pages %}
+<p>We have saved {{processed_pages}} pages of being printed</p>
+{% endif %}
 <p>Like the service? Help us keep the servers running!</p>
 <p>Bitcoin Address: 15PEGoC5PbGz9obPJvWWu4YEikiF4UPJza <br>
 Ethereum Address: 0x26873FcbFcC6570aE7Dbd4852c872C70A46CB113

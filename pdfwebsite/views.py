@@ -8,12 +8,13 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from PyPDF2 import PdfFileWriter, PdfFileReader, utils
+from django.db.models import Sum
 
 from pdfwebsite.models import File,ProcessedFile
 
 
 def home(request):
-	return render(request, 'pdfwebsite/home.html')
+	return render(request, 'pdfwebsite/home.html',response)
 
 
 #Source: https://tex.stackexchange.com/questions/94523/simulate-a-scanned-paper
@@ -29,6 +30,7 @@ def upload(request):
 		uploaded_file = request.FILES['document']
 		response=processPDF(uploaded_file)
 
+	response['processed_pages']=ProcessedFile.objects.aggregate(Sum('pages'))['pages__sum']
 	return render(request, 'pdfwebsite/upload.html', response)
 
 def failed(request):
@@ -89,7 +91,7 @@ def isPdfValid(path):
 		
 		return True
 	except utils.PdfReadError:
-		print("invalid PDF file")
+		print("Invalid PDF file")
 		return False
 	else:
 		return True
