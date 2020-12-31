@@ -22,14 +22,19 @@ def home(request):
 #I adapted the method a little bit with what I thought would work better
 #Output PDF from ImageMagick is way bigger due to rasterization. GhostScript used afterwards for bringing size back down
 #If someone has any ideas how to optimize it further, please feel free.
-#Author: Cristian Lehuede
+#Author: Cristian Lehuede request.POST['exampleRadios']
 
 def upload(request):
 	response={}
+	color=""
+	if request.POST.get('exampleRadios',False)=="gray":
+		color='gray'
+	else:
+		color='sRGB'
+
 	if request.method == 'POST':
 		uploaded_file = request.FILES['document']
-		response=processPDF(uploaded_file)
-
+		response=processPDF(uploaded_file,color)
 	response['processed_pages']=ProcessedFile.objects.aggregate(Sum('pages'))['pages__sum']
 	return render(request, 'pdfwebsite/upload.html', response)
 
@@ -37,7 +42,7 @@ def failed(request):
 	return render(request,'pdfwebsite/failed.html')
 
 
-def processPDF(uploaded_file):
+def processPDF(uploaded_file,color):
 	context = {}
 	fs = FileSystemStorage()
 	if uploaded_file.size>52428000:
@@ -48,7 +53,7 @@ def processPDF(uploaded_file):
 	dirspot = os.getcwd()
 	dirspot=dirspot+fs.url(name)
 	now = datetime.datetime.now()
-
+	
 	# 8 bytes of randomness on the end of the path should be sufficient -
 	# it is more than can be brute-forced in any reasonable amount of time
 	# over the network, especially with the cleanup task removing files every
@@ -59,7 +64,7 @@ def processPDF(uploaded_file):
 	if validate_file:
 		output_path=os.getcwd()+'/media/'+scan_name+'_.pdf'
 		output_path_final=os.getcwd()+'/media/'+scan_name+'.pdf'
-		cmd = [settings.CONVERT_PATH,'-density','110',dirspot,'-colorspace','gray','-linear-stretch','3.5%x10%','-blur','0x0.5','-attenuate','0.25','+noise','Laplacian','-rotate','0.5',output_path]
+		cmd = [settings.CONVERT_PATH,'-density','110',dirspot,'-colorspace',color,'-linear-stretch','3.5%x10%','-blur','0x0.5','-attenuate','0.25','+noise','Laplacian','-rotate','0.5',output_path]
 		print (cmd)
 		subprocess.call(cmd, shell=False)
 		cmd_gs = [settings.GHOSTSCRIPT_PATH,'-dSAFER','-dBATCH','-dNOPAUSE','-dNOCACHE','-sDEVICE=pdfwrite','-sColorConversionStrategy=LeaveColorUnchanged','-dAutoFilterColorImages=true','-dAutoFilterGrayImages=true','-dDownsampleMonoImages=true','-dDownsampleGrayImages=true','-dDownsampleColorImages=true','-sOutputFile='+output_path_final, output_path]
@@ -71,7 +76,7 @@ def processPDF(uploaded_file):
 		os.remove(output_path)
 		os.remove(dirspot)
 	else:
-		context['error']='PDF is not valid or longer than allowed, please recheck uploaded file'
+		context['error']='PDF is not valid or longer than allowed, please recheck uploaded file. If you think this is a mistake, please email the pdf to hello@scanyourpdf.com so we can keep improving the service'
 		os.remove(dirspot)
 
 	
@@ -87,10 +92,11 @@ def isPdfValid(path):
 		processed_file.save()
 		if num_pages>10:
 			return False
-
-		
 		return True
 	except utils.PdfReadError:
+		print("Invalid PDF file")
+		return False
+	except:
 		print("Invalid PDF file")
 		return False
 	else:

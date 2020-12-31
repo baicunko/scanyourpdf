@@ -36,6 +36,18 @@
 		<div class="file-upload" id="file-upload">
 			<form method="post" enctype="multipart/form-data" id="form">
 				{% csrf_token %}
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="gray" checked>
+					<label class="form-check-label" for="exampleRadios1">
+					  Grayscale
+					</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="sRGB">
+					<label class="form-check-label" for="exampleRadios2">
+					  Color
+					</label>
+				  </div>
 				<button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add File</button>
 
 				<div class="image-upload-wrap">
