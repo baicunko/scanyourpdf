@@ -60,6 +60,14 @@ Example:
 ./scanned_pdf.sh scan.pdf
 ```
 
+# Docker
+
+Run the script from a Docker container
+
+```
+docker-compose build
+docker-compose run --rm app ./scanned_pdf.sh -o output.pdf input.pdf
+```
 
 # Pending
 - Contact form for people to send any PDF that may have failed the conversion process to check

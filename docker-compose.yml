@@ -1,0 +1,10 @@
+version: '3.2'
+
+services:
+
+  app:
+    build: .
+    command: ./scanned_pdf.sh
+    volumes:
+      # Mounts the app code (".") into the container's "/app" folder:
+      - .:/app:delegated
