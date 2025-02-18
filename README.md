@@ -43,6 +43,16 @@ To this:
 
 Be warned that this may be insecure; use at your own risk.
 
+# Run the website locally
+
+To run the server locally (once you have setup your virtualenv):
+
+```
+pip install -r requirements.txt
+python manage.py runserver
+```
+
+Then go to [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
 # Gist
 The document `scanned_pdf.sh` is a simple Gist with the two commands required to make the PDF look scanned in case you would like to run this program locally. To execute you need to make sure the dependencies have been correctly installed and then run:
