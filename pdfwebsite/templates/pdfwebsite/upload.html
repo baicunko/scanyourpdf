@@ -1,146 +1,241 @@
-	{% extends "pdfwebsite/base.html" %}
-	{% block content %}
-	<h1>Upload any PDF to make it look like it was scanned</h1>
+{% extends "pdfwebsite/base.html" %}
+{% block content %}
+<h1>Upload any PDF to make it look like it was scanned</h1>
 
-	<div class="col-md-12">
-		<p>Tired of being asked to print and scan your signed PDF? Just use a digital signature, upload your document and we will make it look like it was scanned</p>
-		<p>Document will be available for 1 hour. Maximum of 10 pages PDF.</p>
-		
+<div class="col-md-12">
+    <p>Tired of being asked to print and scan your signed PDF? Just use a digital signature, upload your document and we will make it look like it was scanned</p>
+    <p>Document will be available for 1 hour. Maximum of 10 pages PDF.</p>
 
-		<div class="loading">
-			<div class='uil-ring-css' style='transform:scale(0.79);'>
-			</div>
-		</div>
-
-
+    <div class="loading" style="display: none;">
+        <div class='uil-ring-css' style='transform:scale(0.79);'></div>
+        <p class="progress-message text-center mt-3">Uploading...</p>
+    </div>
 
     {% if url %}
     <div class="file-upload centrar">
-    	<p>Your document is ready</p>
-		<a class="btn btn-primary justify-content-center col-sm" href="{{ url }}">Download</a>
-		<br/><br/>
+        <p>Your document is ready</p>
+        <a class="btn btn-primary justify-content-center col-sm" href="{{ url }}">Download</a>
+        <br/><br/>
     </div>
 
+    {% elif error %}
+    <div class="file-upload centrar">
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    </div>
 
-		{% elif error %}
-		<div class="file-upload centrar">
-			<div class="alert alert-danger" role="alert">
-				{{ error }}
-			</div>
-		</div>
+    {% else %}
+    <div class="file-upload" id="file-upload">
+        <form method="post" enctype="multipart/form-data" id="upload-form">
+            {% csrf_token %}
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="gray" checked>
+                <label class="form-check-label" for="exampleRadios1">
+                    Grayscale
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="sRGB">
+                <label class="form-check-label" for="exampleRadios2">
+                    Color
+                </label>
+            </div>
+            <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger('click')">Add File</button>
 
+            <div class="image-upload-wrap">
+                <input class="file-upload-input" type='file' onchange="readURL(this);" accept="application/pdf" name="document" />
+                <div class="drag-text">
+                    <h3>Drop File here or select Add File</h3>
+                </div>
+            </div>
+            <div class="file-upload-content" style="display: none;">
+                <br>
+                <div>
+                    <p class="file-upload-name"></p>
+                </div>
+                <div class="row">
+                    <div class="image-title-wrap col-sm-6 align-items-start">
+                        <button type="button" onclick="removeUpload()" class="remove-image">Remove</button>
+                    </div>
+                    <div class="image-title-wrap col-sm-6 align-items-end">
+                        <button type="submit" id="btn_upload" class="file-upload-btn">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endif %}
 
+    <div>
+        <br><br><br>
+        <p>Questions? Contact us at hello@scanyourpdf.com</p>
+    </div>
+    <br><br>
+    {% if processed_pages %}
+    <p>We have saved {{processed_pages}} pages of being printed</p>
+    {% endif %}
+    <p>Like the service? Help us keep the servers running!</p>
+    <p>Bitcoin Address: 15PEGoC5PbGz9obPJvWWu4YEikiF4UPJza<br>
+        Ethereum Address: 0x26873FcbFcC6570aE7Dbd4852c872C70A46CB113</p>
 
-		{% else %}
-
-		<div class="file-upload" id="file-upload">
-			<form method="post" enctype="multipart/form-data" id="form">
-				{% csrf_token %}
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="gray" checked>
-					<label class="form-check-label" for="exampleRadios1">
-					  Grayscale
-					</label>
-				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="sRGB">
-					<label class="form-check-label" for="exampleRadios2">
-					  Color
-					</label>
-				  </div>
-				<button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add File</button>
-
-				<div class="image-upload-wrap">
-					<input class="file-upload-input" type='file' onchange="readURL(this);" accept="application/pdf" name="document" />
-					<div class="drag-text">
-						<h3> Drop File here or select Add File</h3>
-					</div>
-				</div>
-				<div class="file-upload-content">
-				</br>
-				<div>
-					<p class="file-upload-name"></p>
-				</div>
-				<div class="row">
-					<div class="image-title-wrap col-sm-6 align-items-start">
-						<button type="button" onclick="removeUpload()" class="remove-image">Remove</button>
-					</div>
-					<div class="image-title-wrap col-sm-6 align-items-end">
-						<button type="submit" id="btn_upload" class="file-upload-btn">Submit</button>
-					</div>
-				</div>
-			</div>
-		</form>
-	</div>
-
-	{% endif %}
-
-
-	<div>
-	</br></br></br>
-	<p>Questions? Contact us at hello@scanyourpdf.com</p>
+    <div class="container" align="center">
+        PayPal
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+            <input type="hidden" name="cmd" value="_s-xclick" />
+            <input type="hidden" name="hosted_button_id" value="P8YGRZB7GQZCY" />
+            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+        </form>
+    </div>
 </div>
-</br></br>
-{% if processed_pages %}
-<p>We have saved {{processed_pages}} pages of being printed</p>
-{% endif %}
-<p>Like the service? Help us keep the servers running!</p>
-<p>Bitcoin Address: 15PEGoC5PbGz9obPJvWWu4YEikiF4UPJza <br>
-Ethereum Address: 0x26873FcbFcC6570aE7Dbd4852c872C70A46CB113
-</p>
-
-
-<div class="container" align="center">
-PayPal 
-		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-			<input type="hidden" name="cmd" value="_s-xclick" />
-			<input type="hidden" name="hosted_button_id" value="P8YGRZB7GQZCY" />
-			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-		</form>		
-</div>
-
-
-</div>
-
 
 <script>
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
 
+            reader.onload = function(e) {
+                $('.image-upload-wrap').hide();
+                $('.file-upload-name').text(input.files[0].name);
+                $('.file-upload-content').show();
+            };
 
-	function readURL(input) {
-		if (input.files && input.files[0]) {
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            removeUpload();
+        }
+    }
 
-			var reader = new FileReader();
+    function removeUpload() {
+        $('.file-upload-input').replaceWith($('.file-upload-input').clone());
+        $('.file-upload-content').hide();
+        $('.image-upload-wrap').show();
+    }
 
-			reader.onload = function(e) {
-				$('.image-upload-wrap').hide();
+    $('.image-upload-wrap').bind('dragover', function() {
+        $('.image-upload-wrap').addClass('image-dropping');
+    });
+    $('.image-upload-wrap').bind('dragleave', function() {
+        $('.image-upload-wrap').removeClass('image-dropping');
+    });
 
-				$('.file-upload-name').text(input.files[0].name);
-				$('.file-upload-content').show();
+    function showError(message) {
+        // Hide loading indicator
+        $('.loading').hide();
+        
+        // Show file upload div with error message
+        $('.file-upload').show().html(`
+            <div class="alert alert-danger text-center" role="alert">
+                <p>${message}</p>
+            </div>
+            <div class="text-center mt-3">
+                <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
+            </div>
+        `);
+    }
 
-				$('.image-title').html(input.files[0].name);
-				console.log(input.files[0].name);
-			};
+    function showSuccess(url) {
+        // First ensure the loading indicator is hidden
+        $('.loading').hide();
+        
+        // Make sure file-upload div is visible
+        $('.file-upload').show();
+        
+        // Update the content
+        $('.file-upload').html(`
+            <div class="centrar">
+                <p>Your document is ready!</p>
+                <a class="btn btn-primary justify-content-center col-sm" href="${url}">Download Processed PDF</a>
+                <br/><br/>
+                <button class="btn btn-secondary" onclick="location.reload()">Process Another PDF</button>
+            </div>
+        `);
+        
+        // Debug - check what's happening
+        console.log('Success handler called with URL:', url);
+        console.log('File upload div now contains:', $('.file-upload').html());
+    }
 
-			reader.readAsDataURL(input.files[0]);
+    function updateProgress(message) {
+        $('.progress-message').text(message);
+    }
 
-		} else {
-			removeUpload();
-		}
-	}
+    function pollStatus(taskId) {
+        // Add a timeout counter
+        pollStatus.attempts = (pollStatus.attempts || 0) + 1;
+        const MAX_ATTEMPTS = 60; // 2 minutes (with 2-second intervals)
+        
+        if (pollStatus.attempts > MAX_ATTEMPTS) {
+            showError('Processing is taking longer than expected. Please try again.');
+            return;
+        }
+        
+        $.ajax({
+            url: `/check-status/${taskId}/`,
+            type: 'GET',
+            success: function(response) {
+                switch(response.status) {
+                    case 'COMPLETED':
+                        if (response.url) {
+                            showSuccess(response.url);
+                        } else {
+                            showError('Error processing PDF. Please try again.');
+                        }
+                        break;
+                    case 'FAILED':
+                        // Handle specific error messages
+                        if (response.error === 'Processing timeout') {
+                            showError('Error processing PDF. Please try uploading again with a simpler document.');
+                        } else {
+                            showError('Error processing PDF. Please try again.');
+                        }
+                        break;
+                    case 'PROCESSING':
+                        updateProgress('Processing your PDF...');
+                        setTimeout(() => pollStatus(taskId), 2000);
+                        break;
+                    case 'PENDING':
+                        updateProgress('Waiting in queue...');
+                        setTimeout(() => pollStatus(taskId), 2000);
+                        break;
+                }
+            },
+            error: function() {
+                showError('Lost connection to server. Please try again.');
+            }
+        });
+    }
 
-
-	function removeUpload() {
-		$('.file-upload-input').replaceWith($('.file-upload-input').clone());
-		$('.file-upload-content').hide();
-		$('.image-upload-wrap').show();
-	}
-	$('.image-upload-wrap').bind('dragover', function () {
-		$('.image-upload-wrap').addClass('image-dropping');
-	});
-	$('.image-upload-wrap').bind('dragleave', function () {
-		$('.image-upload-wrap').removeClass('image-dropping');
-	});
-
-
+    $(document).ready(function() {
+        $('#upload-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Hide the form and show loading
+            $('#file-upload').hide();
+            $('.loading').show();
+            
+            const formData = new FormData(this);
+            
+            $.ajax({
+                url: '',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log('Upload response:', response);
+                    if (response.status === 'success') {
+                        pollStatus(response.task_id);
+                    } else {
+                        showError(response.message);
+                    }
+                },
+                error: function() {
+                    showError('An error occurred while uploading the file');
+                }
+            });
+        });
+    });
 </script>
+
 {% endblock content %}

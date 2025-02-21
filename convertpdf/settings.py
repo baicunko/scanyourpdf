@@ -128,8 +128,16 @@ MEDIA_URL = '/media/'
 
 # Paths to ImageMagick and Ghostscript. It's kept in /usr/local/bin on
 # Mac + Homebrew, /usr/bin on Ubuntu systems (and probably anything else).
-GHOSTSCRIPT_PATH = None
-CONVERT_PATH = None
+GHOSTSCRIPT_PATH = '/opt/homebrew/bin/gs'
+CONVERT_PATH = '/opt/homebrew/bin/convert'
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 35
+CELERY_TASK_SOFT_TIME_LIMIT = 30
+
 
 for candidate in ['/usr/local/bin/gs', '/usr/bin/gs']:
     if os.path.exists(candidate):
@@ -143,3 +151,5 @@ for candidate in ['/usr/local/bin/convert', '/usr/bin/convert']:
 
 if not CONVERT_PATH or not GHOSTSCRIPT_PATH:
     raise ImproperlyConfigured('Check CONVERT_PATH and GHOSTSCRIPT_PATH in your settings.')
+
+

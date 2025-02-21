@@ -226,3 +226,55 @@ a.article-title:hover {
   width: 90%;
   margin-left: 5%;
 }
+
+
+.loading {
+  text-align: center;
+  padding: 40px;
+}
+
+.uil-ring-css {
+  margin: auto;
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.uil-ring-css > div {
+  position: absolute;
+  display: block;
+  width: 64px;
+  height: 64px;
+  top: 0;
+  left: 0;
+  border-radius: 80px;
+  box-sizing: border-box;
+  border: 6px solid #000;
+  border-color: #007bff transparent #007bff transparent;
+  animation: uil-ring-anim 1.5s linear infinite;
+}
+
+@keyframes uil-ring-anim {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
+}
+
+.progress-message {
+  margin-top: 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+.file-upload-content {
+  display: none;
+  text-align: center;
+}
+
+.file-upload-name {
+  margin: 0;
+  color: #666;
+}
