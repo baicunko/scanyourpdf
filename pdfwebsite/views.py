@@ -5,16 +5,13 @@ import subprocess
 import urllib.parse
 
 from django.shortcuts import render
+from django.http import JsonResponse
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from PyPDF2 import PdfFileWriter, PdfFileReader, utils
 from django.db.models import Sum
 
-from pdfwebsite.models import File,ProcessedFile
-
-
-def home(request):
-	return render(request, 'pdfwebsite/home.html',response)
+from .models import File, ProcessedFile, ProcessingTask
+from .tasks import process_pdf_task
 
 
 #Source: https://tex.stackexchange.com/questions/94523/simulate-a-scanned-paper
@@ -25,79 +22,57 @@ def home(request):
 #Author: Cristian Lehuede request.POST['exampleRadios']
 
 def upload(request):
-	response={}
-	color=""
-	if request.POST.get('exampleRadios',False)=="gray":
-		color='gray'
-	else:
-		color='sRGB'
+    if request.method == 'POST':
+        try:
+            uploaded_file = request.FILES['document']
+            if uploaded_file.size > 52428000:  # 50MB limit
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'PDF is larger than 50MB'
+                })
 
-	if request.method == 'POST':
-		uploaded_file = request.FILES['document']
-		response=processPDF(uploaded_file,color)
-	response['processed_pages']=ProcessedFile.objects.aggregate(Sum('pages'))['pages__sum']
-	return render(request, 'pdfwebsite/upload.html', response)
+            color = 'gray' if request.POST.get('exampleRadios', 'gray') == 'gray' else 'sRGB'
+            
+            # Save the uploaded file
+            fs = FileSystemStorage()
+            name = fs.save(uploaded_file.name, uploaded_file)
+            file_path = os.path.join(settings.MEDIA_ROOT, name)
 
-def failed(request):
-	return render(request,'pdfwebsite/failed.html')
+            # Create processing task
+            task = ProcessingTask.objects.create()
+            
+            # Launch async processing
+            process_pdf_task.delay(file_path, color, task.id)
+            
+            return JsonResponse({
+                'status': 'success',
+                'task_id': task.id
+            })
 
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            })
 
-def processPDF(uploaded_file,color):
-	context = {}
-	fs = FileSystemStorage()
-	if uploaded_file.size>52428000:
-		context['error']='PDF is larger than 50MB, please recheck uploaded file'
-		return context
+    context = {
+        'processed_pages': ProcessedFile.objects.aggregate(Sum('pages'))['pages__sum']
+    }
+    return render(request, 'pdfwebsite/upload.html', context)
 
-	name = fs.save(uploaded_file.name,uploaded_file)
-	dirspot = os.getcwd()
-	dirspot=dirspot+fs.url(name)
-	now = datetime.datetime.now()
-	
-	# 8 bytes of randomness on the end of the path should be sufficient -
-	# it is more than can be brute-forced in any reasonable amount of time
-	# over the network, especially with the cleanup task removing files every
-	# hour.
-	scan_name='Scan_' + str(now.year) + str(now.month) + str(now.day) + '_' + secrets.token_urlsafe(8)
-	dirspot=urllib.parse.unquote(dirspot)
-	validate_file=isPdfValid(dirspot)
-	if validate_file:
-		output_path=os.getcwd()+'/media/'+scan_name+'_.pdf'
-		output_path_final=os.getcwd()+'/media/'+scan_name+'.pdf'
-		cmd = [settings.CONVERT_PATH,'-density','110',dirspot,'-colorspace',color,'-linear-stretch','3.5%x10%','-blur','0x0.5','-attenuate','0.25','+noise','Laplacian','-rotate','0.5',output_path]
-		print (cmd)
-		subprocess.call(cmd, shell=False)
-		cmd_gs = [settings.GHOSTSCRIPT_PATH,'-dSAFER','-dBATCH','-dNOPAUSE','-dNOCACHE','-sDEVICE=pdfwrite','-sColorConversionStrategy=LeaveColorUnchanged','-dAutoFilterColorImages=true','-dAutoFilterGrayImages=true','-dDownsampleMonoImages=true','-dDownsampleGrayImages=true','-dDownsampleColorImages=true','-sOutputFile='+output_path_final, output_path]
-		subprocess.call(cmd_gs, shell=False)
-		context['url'] = '/media/'+scan_name+'.pdf'
-		file_save_to_db=File(path=output_path_final)
-		
-		file_save_to_db.save()
-		os.remove(output_path)
-		os.remove(dirspot)
-	else:
-		context['error']='PDF is not valid or longer than allowed, please recheck uploaded file. If you think this is a mistake, please email the pdf to hello@scanyourpdf.com so we can keep improving the service'
-		os.remove(dirspot)
-
-	
-	return context
-
-
-
-def isPdfValid(path):
-	try:
-		reader=PdfFileReader(open(path,'rb'))
-		num_pages = reader.getNumPages()
-		processed_file=ProcessedFile(pages=num_pages)
-		processed_file.save()
-		if num_pages>10:
-			return False
-		return True
-	except utils.PdfReadError:
-		print("Invalid PDF file")
-		return False
-	except:
-		print("Invalid PDF file")
-		return False
-	else:
-		return True
+def check_status(request, task_id):
+    try:
+        task = ProcessingTask.objects.get(id=task_id)
+        response = {
+            'status': task.status,
+            'created_at': task.created_at.isoformat()
+        }
+        
+        if task.status == 'COMPLETED':
+            response['url'] = f'/media/{task.result_path}'
+        elif task.status == 'FAILED':
+            response['error'] = task.error_message
+            
+        return JsonResponse(response)
+    except ProcessingTask.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Task not found'}, status=404)

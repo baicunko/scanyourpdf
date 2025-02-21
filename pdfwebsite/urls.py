@@ -5,8 +5,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.upload, name='pdf-upload'),
-    path('failed/',views.failed, name='pdf-fail'),
-    path('home/', views.home, name='pdf-home'),
+    path('check-status/<int:task_id>/', views.check_status, name='check-status'),
 ]
 
 if settings.DEBUG:
